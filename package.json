@@ -1,0 +1,19 @@
+{
+  "name": "cloudscape-ssr-nav-repro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild build.mjs --bundle --platform=node --format=cjs --outfile=dist/build.cjs && node dist/build.cjs && rm -rf dist",
+    "test": "esbuild test/ssr-assertion.mjs --bundle --platform=node --format=cjs --outfile=dist/test.cjs && node dist/test.cjs && rm -rf dist"
+  },
+  "dependencies": {
+    "@cloudscape-design/components": "3.0.1275",
+    "@cloudscape-design/global-styles": "1.0.57",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}
