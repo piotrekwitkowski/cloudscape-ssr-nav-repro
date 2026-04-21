@@ -2,35 +2,39 @@
 globalThis[Symbol.for('awsui-visual-refresh-flag')] = () => true;
 globalThis[Symbol.for('awsui-global-flags')] = { appLayoutToolbar: true };
 
-import React from 'react';
+import { version as reactVersion } from 'react';
 import { renderToString } from 'react-dom/server';
 import AppLayoutToolbar from '@cloudscape-design/components/app-layout-toolbar';
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 
-const navItems = [{ type: 'link', text: 'Home', href: '/' }];
+const navItems = [{ type: 'link' as const, text: 'Home', href: '/' }];
 const breadcrumbItems = [{ text: 'Home', href: '/' }];
 
-const navigation = React.createElement(SideNavigation, { items: navItems });
-const breadcrumbs = React.createElement(BreadcrumbGroup, { items: breadcrumbItems });
+const navigation = <SideNavigation items={navItems} />;
+const breadcrumbs = <BreadcrumbGroup items={breadcrumbItems} />;
 
 // --- Render A: Default (navigation drawer closed) ---
-const demoA = React.createElement(AppLayoutToolbar, {
-  navigation,
-  breadcrumbs,
-  content: React.createElement('h2', null, 'Default (drawer closed)'),
-  toolsHide: true,
-});
+const demoA = (
+  <AppLayoutToolbar
+    navigation={navigation}
+    breadcrumbs={breadcrumbs}
+    content={<h2>Default (drawer closed)</h2>}
+    toolsHide
+  />
+);
 const htmlA = renderToString(demoA);
 
 // --- Render B: navigationOpen={true} ---
-const demoB = React.createElement(AppLayoutToolbar, {
-  navigation,
-  breadcrumbs: React.createElement(BreadcrumbGroup, { items: breadcrumbItems }),
-  content: React.createElement('h2', null, 'Drawer open (navigationOpen=true)'),
-  navigationOpen: true,
-  toolsHide: true,
-});
+const demoB = (
+  <AppLayoutToolbar
+    navigation={navigation}
+    breadcrumbs={<BreadcrumbGroup items={breadcrumbItems} />}
+    content={<h2>Drawer open (navigationOpen=true)</h2>}
+    navigationOpen={true}
+    toolsHide
+  />
+);
 const htmlB = renderToString(demoB);
 
 // === Assertions ===
@@ -96,7 +100,7 @@ if (!hasBreadcrumbs) {
 // === Report ===
 console.log('=== Cloudscape AppLayoutToolbar SSR Bug Verification ===\n');
 console.log(`Cloudscape version: @cloudscape-design/components@3.0.1275`);
-console.log(`React version: ${React.version}`);
+console.log(`React version: ${reactVersion}`);
 console.log(`Checks run: ${checks}\n`);
 
 if (bugs.length > 0) {

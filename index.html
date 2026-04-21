@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudscape AppLayoutToolbar SSR Repro</title>
+</head>
+<body class="awsui-visual-refresh">
+  <script>
+    // Cloudscape global flags — MUST run before any component module loads.
+    globalThis[Symbol.for('awsui-visual-refresh-flag')] = () => true;
+    globalThis[Symbol.for('awsui-global-flags')] = { appLayoutToolbar: true };
+  </script>
+  <div id="app"><!--ssr-outlet--></div>
+  <script type="module" src="/src/entry-client.tsx"></script>
+</body>
+</html>
