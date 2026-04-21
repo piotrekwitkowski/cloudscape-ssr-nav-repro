@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cloudscape SSR Navigation Bug — Comparison</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+    body { font-family: "Amazon Ember", system-ui, sans-serif; max-width: 1200px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
     h1 { border-bottom: 2px solid #0972d3; padding-bottom: 8px; }
     table { border-collapse: collapse; width: 100%; margin: 24px 0; }
     th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
@@ -23,14 +23,15 @@
     No JavaScript is executed in the browser — what you see is exactly what the server sends.
   </p>
   <p>
-    <strong>Bug:</strong> In the mainline version (3.0.1275), <code>AppLayoutToolbar</code> does not render
-    its slot content (<code>content</code>, <code>navigation</code>) during SSR. The app-layout body is
-    completely empty — only the outer shell and breadcrumbs render.
+    <strong>Bug:</strong> In mainline 3.0.1275, <code>AppLayoutToolbar</code> does not render content,
+    navigation trigger, or navigation panel during SSR. The <code>useMultiAppLayout</code> hook depends on
+    <code>useLayoutEffect</code> for registration, which never fires server-side — leaving
+    <code>toolbarProps</code> null and <code>registered</code> false.
   </p>
   <p>
-    <strong>Fix:</strong> The fork patches the SSR rendering path so slot content (at minimum the
-    <code>content</code> prop) is rendered server-side. The navigation drawer panel remains a client-side
-    interactive element in both versions.
+    <strong>Fix:</strong> The fork adds an SSR bypass in <code>useMultiAppLayout</code> that returns sensible
+    defaults during SSR (<code>registered: true</code>, valid <code>toolbarProps</code>). This enables the
+    skeleton to render all slot content server-side.
   </p>
 
   <h2>Comparison Pages</h2>
@@ -44,40 +45,58 @@
     <tr>
       <td>Mainline 3.0.1275</td>
       <td><code>false</code> (default)</td>
-      <td class="fail">Content slot empty (bug)</td>
+      <td class="fail">Empty layout — no content, no trigger, no nav (bug)</td>
       <td><a href="mainline-closed.html">mainline-closed.html</a></td>
     </tr>
     <tr>
       <td>Mainline 3.0.1275</td>
       <td><code>true</code></td>
-      <td class="fail">Content slot empty (bug)</td>
+      <td class="fail">Empty layout — no content, no trigger, no nav (bug)</td>
       <td><a href="mainline-open.html">mainline-open.html</a></td>
     </tr>
     <tr>
       <td>Fixed Fork</td>
       <td><code>false</code> (default)</td>
-      <td class="pass">Content slot rendered (fix)</td>
+      <td class="pass">Content rendered, hamburger trigger visible (fix)</td>
       <td><a href="fixed-closed.html">fixed-closed.html</a></td>
     </tr>
     <tr>
       <td>Fixed Fork</td>
       <td><code>true</code></td>
-      <td class="pass">Content slot rendered (fix)</td>
+      <td class="pass">Content rendered, nav panel open with links (fix)</td>
       <td><a href="fixed-open.html">fixed-open.html</a></td>
+    </tr>
+  </table>
+
+  <h2>Hydrated Pages (SSG + Client Hydration)</h2>
+  <p>These pages include client JavaScript that hydrates the SSR output, making everything interactive.
+     Buttons work, navigation toggles, links are clickable.</p>
+  <table>
+    <tr><th>Version</th><th>navigationOpen</th><th>Result</th><th>Page</th></tr>
+    <tr>
+      <td>Fixed Fork</td><td><code>false</code></td>
+      <td class="pass">Full SSG + hydration — fully interactive</td>
+      <td><a href="fixed-closed-hydrated.html">fixed-closed-hydrated.html</a></td>
+    </tr>
+    <tr>
+      <td>Fixed Fork</td><td><code>true</code></td>
+      <td class="pass">Full SSG + hydration — nav panel open, fully interactive</td>
+      <td><a href="fixed-open-hydrated.html">fixed-open-hydrated.html</a></td>
     </tr>
   </table>
 
   <h2>What to Look For</h2>
   <ul>
-    <li><strong>Mainline pages:</strong> The page body below the breadcrumbs is <em>completely empty</em>.
-        The <code>awsui_content</code> div contains nothing — confirming the SSR bug where slot content
-        is not rendered server-side.</li>
-    <li><strong>Fixed pages:</strong> The page body contains the heading and paragraph text passed via the
-        <code>content</code> prop — confirming the fix renders slot content during SSR.</li>
-    <li><strong>Navigation drawer:</strong> The nav panel (SideNavigation) is a client-side interactive
-        drawer in both versions. It does not appear in static SSR output because it depends on
-        client-side state. The fix ensures the <em>main content area</em> renders, which is the
-        critical SSR requirement.</li>
+    <li><strong>Mainline pages:</strong> The content area below the toolbar is <em>completely empty</em>.
+        No hamburger trigger button, no navigation panel, no content — only breadcrumbs render.
+        This confirms the SSR bug.</li>
+    <li><strong>Fixed pages (static):</strong> Content area renders the heading and paragraph text.
+        Hamburger trigger (≡) is visible in the toolbar. With <code>navigationOpen=true</code>,
+        the SideNavigation panel shows links (Home, Dashboard, Settings).
+        Buttons are non-functional (no JavaScript).</li>
+    <li><strong>Fixed pages (hydrated):</strong> Same SSR output as the static fixed pages, plus client
+        JavaScript that hydrates the app. Hamburger button toggles the navigation drawer. Links are
+        clickable. This demonstrates the full SSR → hydration flow.</li>
   </ul>
 </body>
 </html>

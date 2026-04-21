@@ -40,3 +40,30 @@ The bug is broader than just navigation:
 - **`resolve.dedupe: ['react', 'react-dom']`** prevents duplicate React when both mainline and fixed fork components are bundled (fork symlink can cause Vite to resolve React from the fork's directory tree)
 - **CSS extraction**: client build produces `dist/client/assets/index-*.css` (~623 KB) containing global + component scoped CSS. SSG script reads and inlines it into each HTML page.
 - **Output size**: ~613 KB per page (up from ~191 KB with esbuild) because Vite extracts ALL component CSS (not just global-styles). This includes scoped component CSS that esbuild missed.
+
+## SSG Visual Styling Fix
+
+### CSS Hash Mismatch Problem
+- Mainline and fixed fork produce **different CSS hashes** (e.g., `awsui_root_7nfqu_1wnvf_153` vs `awsui_root_7nfqu_79dqv_153`)
+- Single client build only extracts mainline CSS → fixed pages had zero matching CSS
+- **Fix**: Two separate Vite client builds — one normal (mainline CSS ~608 KB), one with `resolve.alias` swapping `@cloudscape-design/components` → `@cloudscape-design/components-fixed` (fixed CSS ~742 KB)
+- Alias regex pattern: `find: /^@cloudscape-design\/components(\/|$)/, replacement: '@cloudscape-design/components-fixed$1'`
+
+### Missing Toolbar Bar Problem
+- `AppLayoutToolbar` SSR output uses CSS Grid with `grid-template-areas` defining `toolbar`, `main`, `navigation`, etc.
+- The `toolbar` grid area had no element → row collapsed to 0px
+- Breadcrumbs rendered **outside** the grid root (positioned at `-9999px` via `position: absolute !important`)
+- **Fix**: HTML post-processing moves breadcrumb `<span>` into a new `<div class="ssr-toolbar-bar">` as first child of the grid root
+- Toolbar bar CSS: `grid-area: toolbar; block-size: 42px; border-block-end: 1px solid var(--color-border-layout-ayg8vb, #c6c6cd)`
+
+### Breadcrumb Position Override Challenge
+- Cloudscape breadcrumb wrapper `awsui_root_xttbq_*` has `position: absolute !important; inset-block-start: -9999px !important; inset-inline-start: -9999px !important`
+- Uses `:not(#\t)` pseudo-class for ID-level specificity boost `[0, 1, 1, 0]`
+- Simple `!important` overrides fail — must match or exceed specificity
+- **Fix**: `#app .ssr-toolbar-bar > span` gives `[0, 1, 1, 1]` specificity + `!important` → wins the cascade
+
+### Vite 6 ssrLoadModule CJS Incompatibility
+- Vite 6.4.2 `ssrLoadModule` uses `ESModulesEvaluator` which can't evaluate CJS modules (React, prop-types, etc.)
+- `ssr.noExternal: true` forces all deps through ESM evaluator → `require is not defined`
+- Even `ssr.external: ['react', 'react-dom']` doesn't help — other CJS deps (prop-types) still fail
+- **Workaround**: Keep `vite build --ssr` approach (bundles properly via Rollup) instead of dev-server `ssrLoadModule`
