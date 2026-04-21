@@ -42,6 +42,10 @@ The skeleton component (`BeforeMainSlotSkeleton` in `skeleton-parts.tsx`) render
 
 The hamburger trigger button only exists in `AppLayoutToolbarImplementation`, gated behind `isWidgetReady()`, which is never `true` during SSR.
 
+## Next Step
+
+Replace the skeleton SSR path with the real `AppLayoutToolbar` implementation during server rendering. The skeleton exists for client-side code splitting but is unnecessary during SSR where all code is available synchronously. Rendering the implementation directly eliminates the layout shift on hydration and removes duplicated rendering logic.
+
 ## Versions
 
 | Package | Version |

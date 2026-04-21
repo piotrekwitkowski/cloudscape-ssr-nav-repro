@@ -98,5 +98,13 @@
         JavaScript that hydrates the app. Hamburger button toggles the navigation drawer. Links are
         clickable. This demonstrates the full SSR → hydration flow.</li>
   </ul>
+
+  <h2>Next Step</h2>
+  <p>
+    Replace the skeleton SSR path with the real <code>AppLayoutToolbar</code> implementation
+    during server rendering. The skeleton exists for client-side code splitting but is unnecessary
+    during SSR where all code is available synchronously. Rendering the implementation directly
+    eliminates the layout shift on hydration and removes duplicated rendering logic.
+  </p>
 </body>
 </html>
