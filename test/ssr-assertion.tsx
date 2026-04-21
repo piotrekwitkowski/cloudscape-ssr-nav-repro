@@ -8,6 +8,10 @@ import AppLayoutToolbar from '@cloudscape-design/components/app-layout-toolbar';
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 
+import AppLayoutToolbarFixed from '@cloudscape-design/components-fixed/app-layout-toolbar';
+import SideNavigationFixed from '@cloudscape-design/components-fixed/side-navigation';
+import BreadcrumbGroupFixed from '@cloudscape-design/components-fixed/breadcrumb-group';
+
 const navItems = [{ type: 'link' as const, text: 'Home', href: '/' }];
 const breadcrumbItems = [{ text: 'Home', href: '/' }];
 
@@ -95,6 +99,25 @@ checks++;
 if (!hasBreadcrumbs) {
   // This would be unexpected — breadcrumbs should work now
   bugs.push('UNEXPECTED: BreadcrumbGroup content also missing (should be fixed)');
+}
+
+// === Fixed version tests ===
+const fixedDemo = (
+  <AppLayoutToolbarFixed
+    navigation={<SideNavigationFixed items={navItems} />}
+    breadcrumbs={<BreadcrumbGroupFixed items={breadcrumbItems} />}
+    content={<h2>Fixed version content</h2>}
+    toolsHide
+  />
+);
+const fixedHtml = renderToString(fixedDemo);
+
+// Check: Content prop rendered in fixed version
+checks++;
+if (fixedHtml.includes('Fixed version content')) {
+  console.log('FIX VERIFIED: Content prop renders in SSR with fixed version');
+} else {
+  bugs.push('REGRESSION: Content prop still missing in fixed version');
 }
 
 // === Report ===

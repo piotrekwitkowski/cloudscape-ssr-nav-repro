@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
-    "test": "esbuild test/ssr-assertion.tsx --bundle --platform=node --format=cjs --outfile=dist/test.cjs && node dist/test.cjs && rm -rf dist"
+    "test": "esbuild test/ssr-assertion.tsx --bundle --platform=node --format=cjs --external:react --external:react-dom --outfile=dist/test.cjs && node dist/test.cjs && rm -rf dist",
+    "build:static": "esbuild build-static.mjs --bundle --platform=node --format=cjs --external:react --external:react-dom --outfile=dist/_build-static.cjs && node dist/_build-static.cjs && rm dist/_build-static.cjs"
   },
   "dependencies": {
     "@cloudscape-design/components": "3.0.1275",
+    "@cloudscape-design/components-fixed": "file:../cloudscape-components/lib/components",
     "@cloudscape-design/global-styles": "1.0.57",
     "express": "^5.1.0",
     "react": "19.1.0",

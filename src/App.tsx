@@ -18,8 +18,13 @@ const navigation = (
   />
 );
 
-export default function App({ defaultNavigationOpen = false }: { defaultNavigationOpen?: boolean }) {
-  const [navigationOpen, setNavigationOpen] = useState(defaultNavigationOpen);
+function useNavigationOpen(url: string) {
+  const params = new URLSearchParams(url.split('?')[1] || '');
+  return useState(params.get('navigationOpen') === 'true');
+}
+
+export default function App({ url = '' }: { url?: string }) {
+  const [navigationOpen, setNavigationOpen] = useNavigationOpen(url);
 
   return (
     <AppLayoutToolbar
@@ -32,7 +37,7 @@ export default function App({ defaultNavigationOpen = false }: { defaultNavigati
           <h1>Cloudscape AppLayoutToolbar SSR Reproduction</h1>
           <p>
             This page is server-side rendered.
-            {defaultNavigationOpen
+            {navigationOpen
               ? ' The navigation drawer is set to open.'
               : ' The navigation drawer is set to closed.'}
           </p>
