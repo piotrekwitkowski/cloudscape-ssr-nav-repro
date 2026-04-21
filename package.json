@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.js",
     "test": "esbuild test/ssr-assertion.tsx --bundle --platform=node --format=cjs --external:react --external:react-dom --outfile=dist/test.cjs && node dist/test.cjs && rm -rf dist",
-    "build:static": "esbuild build-static.mjs --bundle --platform=node --format=cjs --external:react --external:react-dom --outfile=dist/_build-static.cjs && node dist/_build-static.cjs && rm dist/_build-static.cjs"
+    "build:static": "node build-ssg.mjs"
   },
   "dependencies": {
     "@cloudscape-design/components": "3.0.1275",

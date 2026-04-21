@@ -1,10 +1,6 @@
-// Global flags MUST be set before any Cloudscape import
-globalThis[Symbol.for('awsui-visual-refresh-flag')] = () => true;
-globalThis[Symbol.for('awsui-global-flags')] = { appLayoutToolbar: true };
-
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 // Mainline components (published 3.0.1275)
@@ -13,24 +9,32 @@ import SideNavigation from '@cloudscape-design/components/side-navigation';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 
 // Fixed components (local fork with SSR fix)
+// @ts-expect-error — resolved via npm file: alias, no ambient types
 import AppLayoutToolbarFixed from '@cloudscape-design/components-fixed/app-layout-toolbar';
+// @ts-expect-error
 import SideNavigationFixed from '@cloudscape-design/components-fixed/side-navigation';
+// @ts-expect-error
 import BreadcrumbGroupFixed from '@cloudscape-design/components-fixed/breadcrumb-group';
 
 // ---------------------------------------------------------------------------
-// Read CSS as a string (inlined into HTML, NOT imported as ES module)
+// Collect ALL CSS from the Vite client build (global + component scoped)
 // ---------------------------------------------------------------------------
 const rootDir = process.cwd();
-const cssPath = join(rootDir, 'node_modules', '@cloudscape-design', 'global-styles', 'index.css');
-const css = readFileSync(cssPath, 'utf8');
+const clientAssetsDir = join(rootDir, 'dist', 'client', 'assets');
+const cssFiles = readdirSync(clientAssetsDir).filter((f) => f.endsWith('.css'));
+if (cssFiles.length === 0) {
+  throw new Error('No CSS files found in dist/client/assets/ — client build may have failed');
+}
+const css = cssFiles.map((f) => readFileSync(join(clientAssetsDir, f), 'utf8')).join('\n');
+console.log(`  Collected CSS from ${cssFiles.length} file(s): ${cssFiles.join(', ')}`);
 
 // ---------------------------------------------------------------------------
 // Shared props
 // ---------------------------------------------------------------------------
 const navItems = [
-  { type: 'link', text: 'Home', href: '/' },
-  { type: 'link', text: 'Dashboard', href: '/dashboard' },
-  { type: 'link', text: 'Settings', href: '/settings' },
+  { type: 'link' as const, text: 'Home', href: '/' },
+  { type: 'link' as const, text: 'Dashboard', href: '/dashboard' },
+  { type: 'link' as const, text: 'Settings', href: '/settings' },
 ];
 const breadcrumbItems = [
   { text: 'App', href: '/' },
@@ -40,30 +44,50 @@ const breadcrumbItems = [
 // ---------------------------------------------------------------------------
 // Render a page for one combination
 // ---------------------------------------------------------------------------
-function renderPage({ version, navigationOpen, Components }) {
+function renderPage(combo: {
+  version: string;
+  navigationOpen: boolean;
+  Components: {
+    ALT: React.ComponentType<any>;
+    SN: React.ComponentType<any>;
+    BG: React.ComponentType<any>;
+  };
+}) {
+  const { version, navigationOpen, Components } = combo;
   const { ALT, SN, BG } = Components;
+
   const navigation = React.createElement(SN, { items: navItems });
   const breadcrumbs = React.createElement(BG, { items: breadcrumbItems });
-  const content = React.createElement('div', null,
-    React.createElement('h1', null, `Cloudscape SSR — ${version} — navigation${navigationOpen ? 'Open' : 'Closed'}`),
-    React.createElement('p', null, 'This is a static SSR render. If the side navigation is missing, the SSR bug is present.')
+  const content = React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'h1',
+      null,
+      `Cloudscape SSR — ${version} — navigation${navigationOpen ? 'Open' : 'Closed'}`,
+    ),
+    React.createElement(
+      'p',
+      null,
+      'This is a static SSR render. If the side navigation is missing, the SSR bug is present.',
+    ),
   );
 
-  const app = React.createElement(ALT, {
-    navigation,
-    breadcrumbs,
-    content,
-    navigationOpen,
-    toolsHide: true,
-  });
-
-  return renderToString(app);
+  return renderToString(
+    React.createElement(ALT, {
+      navigation,
+      breadcrumbs,
+      content,
+      navigationOpen,
+      toolsHide: true,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
 // Wrap rendered HTML in a full document
 // ---------------------------------------------------------------------------
-function htmlDocument({ title, banner, bodyHtml }) {
+function htmlDocument({ title, banner, bodyHtml }: { title: string; banner: string; bodyHtml: string }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
