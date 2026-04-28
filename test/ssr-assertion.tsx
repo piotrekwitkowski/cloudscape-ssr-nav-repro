@@ -123,7 +123,7 @@ if (fixedHtml.includes('Fixed version content')) {
 
 // === Report ===
 console.log('=== Cloudscape AppLayoutToolbar SSR Bug Verification ===\n');
-console.log(`Cloudscape version: @cloudscape-design/components@3.0.1275`);
+console.log(`Cloudscape version: @cloudscape-design/components@3.0.1286`);
 console.log(`React version: ${reactVersion}`);
 console.log(`Checks run: ${checks}\n`);
 

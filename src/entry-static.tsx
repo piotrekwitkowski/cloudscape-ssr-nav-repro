@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 
-// Mainline components (published 3.0.1275)
+// Mainline components (published 3.0.1286)
 import AppLayoutToolbar from '@cloudscape-design/components/app-layout-toolbar';
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
@@ -31,7 +31,6 @@ function renderPage(combo: {
   version: string;
   navigationOpen: boolean;
   Components: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ALT: any;
     SN: any;
     BG: any;
@@ -83,7 +82,7 @@ export const pages = [
   {
     file: 'mainline-closed.html',
     title: 'Mainline — navigationOpen=false',
-    banner: 'Mainline Cloudscape 3.0.1275 — navigationOpen=false (default)',
+    banner: 'Mainline Cloudscape 3.0.1286 — navigationOpen=false (default)',
     version: 'mainline' as const,
     navigationOpen: false,
     Components: { ALT: AppLayoutToolbar, SN: SideNavigation, BG: BreadcrumbGroup },
@@ -91,7 +90,7 @@ export const pages = [
   {
     file: 'mainline-open.html',
     title: 'Mainline — navigationOpen=true',
-    banner: 'Mainline Cloudscape 3.0.1275 — navigationOpen=true',
+    banner: 'Mainline Cloudscape 3.0.1286 — navigationOpen=true',
     version: 'mainline' as const,
     navigationOpen: true,
     Components: { ALT: AppLayoutToolbar, SN: SideNavigation, BG: BreadcrumbGroup },

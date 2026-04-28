@@ -272,7 +272,7 @@ const indexHtml = `<!DOCTYPE html>
     No JavaScript is executed in the browser — what you see is exactly what the server sends.
   </p>
   <p>
-    <strong>Bug:</strong> In mainline 3.0.1275, <code>AppLayoutToolbar</code> does not render content,
+    <strong>Bug:</strong> In mainline 3.0.1286, <code>AppLayoutToolbar</code> does not render content,
     navigation trigger, or navigation panel during SSR. The <code>useMultiAppLayout</code> hook depends on
     <code>useLayoutEffect</code> for registration, which never fires server-side — leaving
     <code>toolbarProps</code> null and <code>registered</code> false.
@@ -292,13 +292,13 @@ const indexHtml = `<!DOCTYPE html>
       <th>Page</th>
     </tr>
     <tr>
-      <td>Mainline 3.0.1275</td>
+      <td>Mainline 3.0.1286</td>
       <td><code>false</code> (default)</td>
       <td class="fail">Empty layout — no content, no trigger, no nav (bug)</td>
       <td><a href="mainline-closed.html">mainline-closed.html</a></td>
     </tr>
     <tr>
-      <td>Mainline 3.0.1275</td>
+      <td>Mainline 3.0.1286</td>
       <td><code>true</code></td>
       <td class="fail">Empty layout — no content, no trigger, no nav (bug)</td>
       <td><a href="mainline-open.html">mainline-open.html</a></td>
