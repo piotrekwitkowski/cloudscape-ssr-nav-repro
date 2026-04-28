@@ -10,11 +10,20 @@ mkdirSync(distDir, { recursive: true });
 
 // Step 1 — Extract CSS via client builds (mainline + fixed with different hashes)
 console.log('Building CSS (mainline)...');
-await build({ build: { outDir: 'dist/_css-mainline' }, logLevel: 'warn' });
+await build({
+  build: {
+    outDir: 'dist/_css-mainline',
+    rollupOptions: { input: { main: join(rootDir, 'src/entry-client.tsx') } },
+  },
+  logLevel: 'warn',
+});
 
 console.log('Building CSS (fixed fork)...');
 await build({
-  build: { outDir: 'dist/_css-fixed' },
+  build: {
+    outDir: 'dist/_css-fixed',
+    rollupOptions: { input: { main: join(rootDir, 'src/entry-client.tsx') } },
+  },
   logLevel: 'warn',
   resolve: {
     alias: [
@@ -61,11 +70,16 @@ const fixedCSS = readCSS('dist/_css-fixed');
 
 // Step 2 — Build SSR generator bundle
 console.log('\nBuilding SSR bundle...');
-await build({ build: { ssr: 'src/entry-static.tsx', outDir: 'dist/_ssr' }, logLevel: 'warn' });
+await build({
+  build: { ssr: 'src/entry-static.tsx', outDir: 'dist/_ssr' },
+  ssr: { noExternal: true, external: ['react', 'react-dom'] },
+  logLevel: 'warn',
+});
 
 console.log('Building SSR hydrate bundle (fixed fork)...');
 await build({
   build: { ssr: 'src/entry-ssr-hydrate.tsx', outDir: 'dist/_ssr-hydrate' },
+  ssr: { noExternal: true, external: ['react', 'react-dom'] },
   resolve: {
     alias: [
       {
