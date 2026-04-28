@@ -12,8 +12,8 @@
     "@cloudscape-design/components": "3.0.1286",
     "@cloudscape-design/components-fixed": "file:../cloudscape-components/lib/components",
     "@cloudscape-design/global-styles": "1.0.58",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
