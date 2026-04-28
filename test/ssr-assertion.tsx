@@ -102,8 +102,9 @@ if (!hasBreadcrumbs) {
 }
 
 // === Fixed version tests ===
+const ALT = AppLayoutToolbarFixed as unknown as React.ComponentType<any>;
 const fixedDemo = (
-  <AppLayoutToolbarFixed
+  <ALT
     navigation={<SideNavigationFixed items={navItems} />}
     breadcrumbs={<BreadcrumbGroupFixed items={breadcrumbItems} />}
     content={<h2>Fixed version content</h2>}

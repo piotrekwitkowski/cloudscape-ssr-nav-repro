@@ -7,11 +7,8 @@ import SideNavigation from '@cloudscape-design/components/side-navigation';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 
 // Fixed components (local fork with SSR fix)
-// @ts-expect-error — resolved via npm file: alias, no ambient types
 import AppLayoutToolbarFixed from '@cloudscape-design/components-fixed/app-layout-toolbar';
-// @ts-expect-error
 import SideNavigationFixed from '@cloudscape-design/components-fixed/side-navigation';
-// @ts-expect-error
 import BreadcrumbGroupFixed from '@cloudscape-design/components-fixed/breadcrumb-group';
 
 // ---------------------------------------------------------------------------
@@ -34,9 +31,10 @@ function renderPage(combo: {
   version: string;
   navigationOpen: boolean;
   Components: {
-    ALT: React.ComponentType<any>;
-    SN: React.ComponentType<any>;
-    BG: React.ComponentType<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ALT: any;
+    SN: any;
+    BG: any;
   };
 }) {
   const { version, navigationOpen, Components } = combo;
