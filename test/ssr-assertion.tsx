@@ -1,6 +1,6 @@
 // Global flags MUST be set before any Cloudscape import
-globalThis[Symbol.for('awsui-visual-refresh-flag')] = () => true;
-globalThis[Symbol.for('awsui-global-flags')] = { appLayoutToolbar: true };
+(globalThis as Record<symbol, unknown>)[Symbol.for('awsui-visual-refresh-flag')] = () => true;
+(globalThis as Record<symbol, unknown>)[Symbol.for('awsui-global-flags')] = { appLayoutToolbar: true };
 
 import { version as reactVersion } from 'react';
 import { renderToString } from 'react-dom/server';
