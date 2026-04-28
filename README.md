@@ -10,15 +10,11 @@ During SSR with `renderToString`, Cloudscape's `AppLayoutToolbar` renders an emp
 git clone https://github.com/piotrekwitkowski/cloudscape-ssr-nav-repro.git
 cd cloudscape-ssr-nav-repro
 npm install
+npm run build:static
 npm run dev
 ```
 
-Then open:
-
-- **Demo A** (default): [http://localhost:3000](http://localhost:3000) — navigation drawer closed
-- **Demo B** (drawer open): [http://localhost:3000/?navigationOpen=true](http://localhost:3000/?navigationOpen=true)
-
-Disable JavaScript in your browser (or throttle the network) to see the raw SSR output before hydration.
+Then open [http://localhost:5173](http://localhost:5173) to view the comparison pages.
 
 ## Automated Verification
 
@@ -50,7 +46,7 @@ Replace the skeleton SSR path with the real `AppLayoutToolbar` implementation du
 
 | Package | Version |
 |---------|---------|
-| `@cloudscape-design/components` | 3.0.1275 |
-| `@cloudscape-design/global-styles` | 1.0.57 |
-| `react` | 19.1.0 |
-| `react-dom` | 19.1.0 |
+| `@cloudscape-design/components` | 3.0.1286 |
+| `@cloudscape-design/global-styles` | 1.0.58 |
+| `react` | 19.2.5 |
+| `react-dom` | 19.2.5 |
